@@ -3,14 +3,16 @@
 // Digital Write to pins 0-13 of Arduino Micro
 // author:  Kent Meyer 10/2024
 
-
+// note that all pins are set to LOW on reset...this can be reconfigured if needed
 const int numPins = 14;
+const int defaultPinSetting = LOW;
+
 
 void setup() {
   for(int i=0; i<numPins; i++)
   {
     pinMode(i, OUTPUT);
-    digitalWrite(i,LOW);
+    digitalWrite(i,defaultPinSetting);
   }
   Serial.begin(9600);
 }
@@ -41,19 +43,22 @@ void serialEvent() {  // occurs whenever new data comes in the hardware serial R
      setval = LOW;
   }
   else {
-    setval = HIGH;
+     setval = HIGH;
   }
     
   pin = int (strtol(pins, NULL, 16));
 
   if (pin > (numPins-1)) {
-    Serial.println("INVALID PIN");
-    return;
+     Serial.println("INVALID PIN");
+     return;
   }
-  // call appropriate function
-  if (code == 'M')
-    {  // move absolute 
+  
+  if (code == 'M')  { 
       digitalWrite(pin, setval);
-
-    }
+  }
+  else if (code == 'R') {
+      for(int i=0; i<numPins; i++) {
+      digitalWrite(i,defaultPinSetting);
+      }
+  }
 }
